@@ -15,7 +15,7 @@ var yeoman = {
 };
 
 var paths = {
-  scripts: [yeoman.app + '/scripts/**/*.js'],
+  scripts: [yeoman.app + '/js/**/*.js'],
   styles: [yeoman.app + '/styles/**/*.scss'],
   test: ['test/spec/**/*.js'],
   testRequire: [
@@ -78,7 +78,14 @@ gulp.task('start:server', function() {
     root: [yeoman.app, '.tmp'],
     livereload: true,
     // Change this to '0.0.0.0' to access the server from outside.
-    port: 9000
+    port: 9000,
+    middleware: function (connect) {
+      return [
+        connect().use(
+          '/bower_components',
+          connect.static('./bower_components')
+        )]
+    }
   });
 });
 
@@ -116,6 +123,7 @@ gulp.task('serve', function (cb) {
   runSequence('clean:tmp',
     ['lint:scripts'],
     ['start:client'],
+    ['bower'],
     'watch', cb);
 });
 
@@ -143,7 +151,7 @@ gulp.task('bower', function () {
       directory: yeoman.app + '/bower_components',
       ignorePath: '..'
     }))
-  .pipe(gulp.dest(yeoman.app + '/views'));
+  .pipe(gulp.dest(yeoman.app /*+ '/views'*/));
 });
 
 ///////////
